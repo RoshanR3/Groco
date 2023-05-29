@@ -306,7 +306,7 @@ section {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: url("images/img24.jpg") no-repeat;
+    background: url("../project1/images/img24.jpg") no-repeat;
     background-position: center;
     background-size: cover;
     padding-top: 20rem;
