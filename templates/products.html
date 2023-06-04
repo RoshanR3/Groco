@@ -1,6 +1,21 @@
 {% include 'header.html' %}
+<style>
+    @media (max-width: 727px) {
+        #products{
+            margin-top: 2%;
+        }
+    }
+    @media (max-width: 609px) {
+        #products{
+            margin-top: 4%;
+        }
+    }
+    .heading{
+        margin-top: 7%;
+    }
+</style>
 
-<section class="products" style="margin-top: 6%" id="products">
+<section class="products"  id="products">
         <h1 class="heading">our <span>products</span></h1>
         {% for i in range(5) %}
         <div class="swiper product-slider">
@@ -19,7 +34,7 @@
                     </div>
                     <button  data-item-id="{{ d['id'] }}"
   data-item-price="{{ d['price'] }}"
-  data-item-description="{{ d['name'] }} is a fruit which contains {{ d['calories'] }} and is very healthy to eat. }}"
+  data-item-description="{{ d['name'] }} is a fruit which contains {{ d['calories'] }} calories and is very healthy to eat."
   data-item-image="{{ d['link'] }}"
   data-item-name="{{ d['name'] }}" class="btn snipcart-add-item">add to cart</button>
                 </div>
