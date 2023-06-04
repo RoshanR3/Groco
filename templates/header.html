@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grocery website</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='project.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+</head>
+
+<body>
+    <header class="header">
+        <a href="#" class="logo"><i class="fas fa-shopping-basket"></i>groco</a>
+        <nav class="navbar">
+            <a href="{{ url_for('home') }}">home</a>
+            <a href="#features">features</a>
+            <a href="{{ url_for('products') }}">products</a>
+            <a href="#categories">categories</a>
+            <a href="#review">review</a>
+            <a href="#blogs">blogs</a>
+        </nav>
+        <div class="icons">
+            <div class="fas fa-bars" id="menu-btn"></div>
+            <div class="fas fa-search" id="search-btn"></div>
+            <div class="fas fa-shopping-cart snipcart-checkout" id="cart-btn"></div>
+            <div class="fas fa-user" id="login-btn"></div>
+        </div>
+        <form action="" class="search-form">
+            <input type="search" id="search-box" placeholder="search here...">
+            <label for="search-box" class="fas fa-search"></label>
+        </form>
+{#        <div class="shopping-cart">#}
+{#            <div class="box">#}
+{#                <i class="fas fa-trash"></i>#}
+{#                <img src="{{ url_for('static',filename='images/img1.jpeg')}}" alt="">#}
+{#                <div class="content">#}
+{#                    <h3>watermelon</h3>#}
+{#                    <span class="price">100 Rs/-</span>#}
+{#                    <span class="quantity">qty : 1kg</span>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="box">#}
+{#                <i class="fas fa-trash"></i>#}
+{#                <img src="{{ url_for('static',filename='images/img3.jpeg')}}" alt="">#}
+{#                <div class="content">#}
+{#                    <h3>onion</h3>#}
+{#                    <span class="price">80 Rs/-</span>#}
+{#                    <span class="quantity">qty : 1kg</span>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="box">#}
+{#                <i class="fas fa-trash"></i>#}
+{#                <img src="{{ url_for('static',filename='images/img4.jpeg')}}" alt="">#}
+{#                <div class="content">#}
+{#                    <h3>chicken</h3>#}
+{#                    <span class="price">60 Rs/-</span>#}
+{#                    <span class="quantity">qty : 1kg</span>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="total">total: 240 Rs/-</div>#}
+{#            <a href="#" class="btn">checkout</a>#}
+{#        </div>#}
+        {% if not current_user.is_authenticated: %}
+        <form action="{{ url_for('login') }}" method="post" class="login-form">
+            <h3>login now</h3>
+            <input name="email" type="email" placeholder="Enter your email..." class="box">
+            <input name="password" type="password" placeholder="Enter your password..." class="box">
+            <p>forgot password <a href="#">click here</a></p>
+            <p>sign up <a href="{{ url_for('signup') }}">click here</a></p>
+            <input type="submit" placeholder="login now" class="btn">
+        </form>
+        {% else: %}
+            <div class="login-form">
+                <h3><a href="{{ url_for('logout') }}">Logout</a></h3>
+            </div>
+        {% endif %}
+    </header>

@@ -1,0 +1,32 @@
+{% include 'header.html' %}
+
+<section class="products" style="margin-top: 6%" id="products">
+        <h1 class="heading">our <span>products</span></h1>
+        {% for i in range(5) %}
+        <div class="swiper product-slider">
+            <div class="swiper-wrapper">
+                {% for d in data[i*4:(i*4)+4]  %}
+                <div class="swiper-slide box">
+                    <img src="{{ d['link'] }}" alt="">
+                    <h3>{{ d['name'] }}</h3>
+                    <div class="price">{{ d['price'] }} Rs/- per Kg</div>
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <button  data-item-id="{{ d['id'] }}"
+  data-item-price="{{ d['price'] }}"
+  data-item-description="{{ d['name'] }} is a fruit which contains {{ d['calories'] }} and is very healthy to eat. }}"
+  data-item-image="{{ d['link'] }}"
+  data-item-name="{{ d['name'] }}" class="btn snipcart-add-item">add to cart</button>
+                </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        </div>
+    </section>
+
+{% include 'footer.html' %}
