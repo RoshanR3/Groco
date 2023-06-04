@@ -23,7 +23,7 @@ db = SQLAlchemy()
 db.init_app(app)
 f = open('data.json')
 data = json.load(f)
-print(data)
+
 class User(UserMixin, db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
