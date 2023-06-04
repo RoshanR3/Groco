@@ -1,0 +1,197 @@
+{% include 'header.html' %}
+<section class="home" id="home">
+    <div class="content">
+        <h3>fresh and <span>organic </span>products for your</h3>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt, consequatur. Qui voluptates in placeat
+            aut.</p>
+        <a href="{{ url_for('products') }}" class="btn-1">shop now</a>
+    </div>
+</section>
+<section class="features" id="features">
+    <h1 class="heading">our <span>features</span></h1>
+    <div class="box-container">
+        <div class="box">
+            <img src="{{ url_for('static',filename='images/img6.jpg') }}" alt="">
+            <h3>fresh and organic</h3>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus hic, in minus dolor tempore
+                eligendi!</p>
+            <a href="#" class="btn">read more</a>
+        </div>
+        <div class="box">
+            <img src="{{ url_for('static',filename='images/img5.jpg') }}" alt="">
+            <h3>free delivery</h3>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus hic, in minus dolor tempore
+                eligendi!</p>
+            <a href="#" class="btn">read more</a>
+        </div>
+        <div class="box">
+            <img src="{{ url_for('static',filename='images/img7.jpg') }}" alt="">
+            <h3>easy payments</h3>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus hic, in minus dolor tempore
+                eligendi!</p>
+            <a href="#" class="btn">read more</a>
+        </div>
+    </div>
+</section>
+<section class="products" style="margin-top: 6%" id="products">
+    <h1 class="heading">our <span>products</span></h1>
+    {% for i in range(2) %}
+        <div class="swiper product-slider">
+        <div class="swiper-wrapper">
+            {% for d in data[i*4:(i*4)+4] %}
+                <div class="swiper-slide box">
+                    <img src="{{ d['link'] }}" alt="">
+                    <h3>{{ d['name'] }}</h3>
+                    <div class="price">{{ d['price'] }} Rs/- per Kg</div>
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <button data-item-id="{{ d['id'] }}"
+                            data-item-price="{{ d['price'] }}"
+                            data-item-description="{{ d['name'] }} is a fruit which contains {{ d['calories'] }} and is very healthy to eat. }}"
+                            data-item-image="{{ d['link'] }}"
+                            data-item-name="{{ d['name'] }}" class="btn snipcart-add-item">add to cart
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+    </div>
+</section>
+<section class="categories" id="categories">
+    <h1 class="heading">product <span>categories</span></h1>
+    <div class="box-container ">
+        <div class="box">
+            <img src="{{ url_for('static',filename='images/img14.jpeg') }}" alt="">
+            <h3>vegetables</h3>
+            <p>upto 40% off</p>
+            <a href="#" class="btn">shop now</a>
+        </div>
+        <div class="box">
+            <img src="{{ url_for('static',filename='images/img15.jpeg') }}" alt="">
+            <h3>fresh fruits</h3>
+            <p>upto 45% off</p>
+            <a href="#" class="btn">shop now</a>
+        </div>
+        <div class="box">
+            <img src="{{ url_for('static',filename='images/img22.jpeg') }}" alt="">
+            <h3>dairy products</h3>
+            <p>upto 35% off</p>
+            <a href="#" class="btn">shop now</a>
+        </div>
+        <div class="box">
+            <img src="{{ url_for('static',filename='images/img13.jpeg') }}" alt="">
+            <h3>fresh meat</h3>
+            <p>upto 45% off</p>
+            <a href="#" class="btn">shop now</a>
+        </div>
+    </div>
+</section>
+<section class="review" id="review">
+    <h3 class="heading">customer's <span>review</span></h3>
+    <div class="swiper review-slider">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide box">
+                <img src="{{ url_for('static',filename='images/img19.jpeg') }}" alt="">
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officia cum quo voluptatem nihil ut aut
+                    recusandae fugit quasi veritatis dolores.</p>
+                <h3>Krish tiwari</h3>
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+            </div>
+            <div class="swiper-slide box">
+                <img src="{{ url_for('static',filename='images/img18.jpeg') }}" alt="">
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officia cum quo voluptatem nihil ut aut
+                    recusandae fugit quasi veritatis dolores.</p>
+                <h3>Harsh kumar</h3>
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+            </div>
+            <div class="swiper-slide box">
+                <img src="{{ url_for('static',filename='images/img26.jpeg') }}" alt="">
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officia cum quo voluptatem nihil ut aut
+                    recusandae fugit quasi veritatis dolores.</p>
+                <h3>Lohitaksha</h3>
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+            </div>
+            <div class="swiper-slide box">
+                <img src="{{ url_for('static',filename='images/img20.jpeg') }}" alt="">
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officia cum quo voluptatem nihil ut aut
+                    recusandae fugit quasi veritatis dolores.</p>
+                <h3>Ishon panda</h3>
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="blogs" id="blogs">
+    <h3 class="heading">our <span>blogs</span></h3>
+    <div class="box-container">
+        <div class="box">
+            <img src="{{ url_for('static',filename='images/img12.jpeg') }}" alt="">
+            <div class="content">
+                <div class="icons">
+                    <a href="#"><i class="fas fa-user"></i>by user</a>
+                    <a href="#"><i class="fas fa-calendar"></i>29th may 2023</a>
+                </div>
+                <h3>fresh and organic vegetables and fruits</h3>
+                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nulla ipsam laudantium molestias
+                    placeat natus voluptate adipisci consequuntur sed reiciendis! Explicabo.</p>
+                <a href="#" class="btn">read more</a>
+            </div>
+        </div>
+        <div class="box">
+            <img src="{{ url_for('static',filename='images/img23.jpeg') }}" alt="">
+            <div class="content">
+                <div class="icons">
+                    <a href="#"><i class="fas fa-user"></i>by user</a>
+                    <a href="#"><i class="fas fa-calendar"></i>29th may 2023</a>
+                </div>
+                <h3>fresh and organic vegetables and fruits</h3>
+                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nulla ipsam laudantium molestias
+                    placeat natus voluptate adipisci consequuntur sed reiciendis! Explicabo.</p>
+                <a href="#" class="btn">read more</a>
+            </div>
+        </div>
+        <div class="box">
+            <img src="{{ url_for('static',filename='images/img21.jpeg') }}" alt="">
+            <div class="content">
+                <div class="icons">
+                    <a href="#"><i class="fas fa-user"></i>by user</a>
+                    <a href="#"><i class="fas fa-calendar"></i>29th may 2023</a>
+                </div>
+                <h3>fresh and organic vegetables and fruits</h3>
+                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nulla ipsam laudantium molestias
+                    placeat natus voluptate adipisci consequuntur sed reiciendis! Explicabo.</p>
+                <a href="#" class="btn">read more</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% include 'footer.html' %}
