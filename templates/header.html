@@ -14,7 +14,7 @@
 
 <body>
     <header class="header">
-        <a href="#" class="logo"><i class="fas fa-shopping-basket"></i>groco</a>
+        <a href="{{ url_for('home') }}" class="logo"><i class="fas fa-shopping-basket"></i>groco</a>
         <nav class="navbar">
             <a href="{{ url_for('home') }}">home</a>
             <a href="#features">features</a>
@@ -69,7 +69,7 @@
             <h3>login now</h3>
             <input name="email" type="email" placeholder="Enter your email..." class="box">
             <input name="password" type="password" placeholder="Enter your password..." class="box">
-            <p>forgot password <a href="#">click here</a></p>
+            <p>forgot password <a href="{{ url_for('forgot_password') }}">click here</a></p>
             <p>sign up <a href="{{ url_for('signup') }}">click here</a></p>
             <input type="submit" placeholder="login now" class="btn">
         </form>
