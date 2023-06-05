@@ -11,6 +11,7 @@ from algoliasearch.search_client import SearchClient
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message, Mail
 from flask_caching import Cache
+from flask_wtf.csrf import CSRFProtect
 
 load_dotenv()
 app = Flask(__name__)
@@ -25,6 +26,11 @@ app.config['MAIL_DEFAULT_SENDER'] = os.environ.get("MAIL_DEFAULT_SENDER")
 app.config['MAIL_PASSWORD'] = os.environ.get("MAIL_PASSWORD")
 app.config['CACHE_TYPE'] = 'simple'
 app.config['CACHE_DEFAULT_TIMEOUT'] = 300
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['REMEMBER_COOKIE_SECURE'] = True
+
+# Initialize CSRF protection
+csrf = CSRFProtect(app)
 
 mail = Mail(app)
 cache = Cache(app)
