@@ -2,7 +2,7 @@ import requests
 from flask import Flask, render_template, redirect, request, url_for
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func
+from sqlalchemy import func, Index
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 import os
@@ -10,10 +10,8 @@ import json
 from algoliasearch.search_client import SearchClient
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message, Mail
-
-
-
-
+from flask_caching import Cache
+from flask_wtf.csrf import CSRFProtect
 
 load_dotenv()
 app = Flask(__name__)
@@ -26,13 +24,19 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = os.environ.get("MAIL_USERNAME")
 app.config['MAIL_DEFAULT_SENDER'] = os.environ.get("MAIL_DEFAULT_SENDER")
 app.config['MAIL_PASSWORD'] = os.environ.get("MAIL_PASSWORD")
+app.config['CACHE_TYPE'] = 'simple'
+app.config['CACHE_DEFAULT_TIMEOUT'] = 300
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['REMEMBER_COOKIE_SECURE'] = True
+
+# Initialize CSRF protection
+csrf = CSRFProtect(app)
 
 mail = Mail(app)
-# ckeditor = CKEditor(app)
+cache = Cache(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.session_protection = "strong"
-# Bootstrap(app)
 db = SQLAlchemy()
 db.init_app(app)
 f = open('data.json')
@@ -60,6 +64,10 @@ class Product(db.Model):
     link = db.Column(db.String(1000))
     price = db.Column(db.String(1000))
 
+Index('idx_products_name', Product.name)
+Index('idx_products_family', Product.family)
+Index('idx_products_order', Product.order)
+Index('idx_products_genus', Product.genus)
 
 with app.app_context():
     db.create_all()
@@ -68,6 +76,10 @@ with app.app_context():
     #     db.session.add(new_product)
     #     db.session.commit()
     d = Product.query.all()
+
+@cache.cached(timeout=300)
+def get_products():
+    return Product.query.all()
 
 def generate_reset_token(user):
     serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
@@ -93,13 +105,16 @@ def unauthorized():
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
 @app.route('/')
 def home():
-    return render_template('index.html', data=d)
+    products = get_products()
+    return render_template('index.html', data=products)
 
 @app.route("/products")
 def products():
-    return render_template('products.html', data=d)
+    products = get_products()
+    return render_template('products.html', data=products)
 
 @app.route("/signup", methods=["GET","POST"])
 def signup():
@@ -187,5 +202,6 @@ def reset_password(token):
 def logout():
     logout_user()
     return redirect("/")
+
 if __name__ == '__main__':
     app.run()
