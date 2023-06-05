@@ -23,9 +23,9 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'champion.coc212@gmail.com'
-app.config['MAIL_DEFAULT_SENDER'] = 'champion.coc212@gmail.com'
-app.config['MAIL_PASSWORD'] = 
+app.config['MAIL_USERNAME'] = os.environ.get("MAIL_USERNAME")
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get("MAIL_DEFAULT_SENDER")
+app.config['MAIL_PASSWORD'] = os.environ.get("MAIL_PASSWORD")
 
 mail = Mail(app)
 # ckeditor = CKEditor(app)
@@ -73,21 +73,17 @@ def generate_reset_token(user):
     serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
     token = serializer.dumps(user.email, salt='password-reset')
 
-    # Save the token to the user's record in the database
     user.reset_token = token
     db.session.commit()
 
     return token
 
 def send_reset_email(email, token):
-    # Construct the password reset URL using the token
     reset_url = url_for('reset_password', token=token, _external=True)
 
-    # Create the email message
     msg = Message('Password Reset Request', recipients=[email])
-    msg.body = f'Please click the following link to reset your password: {reset_url}'
+    msg.body = f'Please click the following link to reset your password:\n{reset_url}'
 
-    # Send the email
     mail.send(msg)
 
 @login_manager.unauthorized_handler
@@ -163,11 +159,9 @@ def forgot_password():
 def reset_password(token):
     serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
     try:
-        # Verify and load the token to get the associated email
         email = serializer.loads(token, salt='password-reset', max_age=3600)
         user = User.query.filter_by(email=email).first()
     except:
-        # Handle invalid or expired tokens
         return render_template('reset.html', invalid=True)
 
     if request.method == 'POST':
