@@ -29,8 +29,8 @@
             <div class="fas fa-shopping-cart snipcart-checkout" id="cart-btn"></div>
             <div class="fas fa-user" id="login-btn"></div>
         </div>
-        <form action="" class="search-form">
-            <input type="search" id="search-box" placeholder="search here...">
+        <form action="{{ url_for('search') }}" class="search-form">
+            <input name="query" type="search" id="search-box" placeholder="search here...">
             <label for="search-box" class="fas fa-search"></label>
         </form>
 {#        <div class="shopping-cart">#}

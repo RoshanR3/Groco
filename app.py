@@ -12,6 +12,7 @@ from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message, Mail
 from flask_caching import Cache
 
+
 load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
@@ -35,8 +36,10 @@ login_manager.init_app(app)
 login_manager.session_protection = "strong"
 db = SQLAlchemy()
 db.init_app(app)
-f = open('data.json')
-data = json.load(f)
+client = SearchClient.create('QTD6N8WZGF', os.environ.get("ADMIN_KEY"))
+index = client.init_index('products')
+# f = open('data.json')
+# data = json.load(f)
 
 class User(UserMixin, db.Model):
     __tablename__ = 'user'
@@ -60,10 +63,31 @@ class Product(db.Model):
     link = db.Column(db.String(1000))
     price = db.Column(db.String(1000))
 
+    def to_algolia_dict(self):
+        return {
+            'objectID': self.id,
+            'name': self.name,
+            'family': self.family,
+            'order': self.order,
+            'genus': self.genus,
+            'calories': self.calories,
+            'fat': self.fat,
+            'sugar': self.sugar,
+            'carbohydrate': self.carbohydrate,
+            'protein': self.protein,
+            'link': self.link,
+            'price': self.price
+        }
+
 Index('idx_products_name', Product.name)
 Index('idx_products_family', Product.family)
 Index('idx_products_order', Product.order)
 Index('idx_products_genus', Product.genus)
+
+def sync_products_with_algolia():
+    produc = Product.query.all()
+    algolia_products = [product.to_algolia_dict() for product in produc]
+    index.save_objects(algolia_products)
 
 with app.app_context():
     db.create_all()
@@ -73,9 +97,13 @@ with app.app_context():
     #     db.session.commit()
     d = Product.query.all()
 
-@cache.cached(timeout=300)
 def get_products():
     return Product.query.all()
+
+def search_products(query):
+    results = index.search(query)
+    product_ids = [int(hit['objectID']) for hit in results['hits']]
+    return Product.query.filter(Product.id.in_(product_ids)).all()
 
 def generate_reset_token(user):
     serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
@@ -183,6 +211,15 @@ def reset_password(token):
 def logout():
     logout_user()
     return redirect("/")
+
+@app.route('/search')
+def search():
+    query = request.args.get('query', '')
+    if query:
+        produ = search_products(query=query)
+    else:
+        produ = get_products()
+    return render_template('products.html', data=produ)
 
 if __name__ == '__main__':
     app.run()
