@@ -12,6 +12,7 @@ from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message, Mail
 from flask_caching import Cache
 
+
 load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
@@ -28,7 +29,6 @@ app.config['CACHE_DEFAULT_TIMEOUT'] = 300
 app.config['SESSION_COOKIE_SECURE'] = True
 app.config['REMEMBER_COOKIE_SECURE'] = True
 
-# Initialize CSRF protection
 mail = Mail(app)
 cache = Cache(app)
 login_manager = LoginManager()
@@ -36,8 +36,10 @@ login_manager.init_app(app)
 login_manager.session_protection = "strong"
 db = SQLAlchemy()
 db.init_app(app)
-f = open('data.json')
-data = json.load(f)
+client = SearchClient.create('QTD6N8WZGF', os.environ.get("ADMIN_KEY"))
+index = client.init_index('products')
+# f = open('data.json')
+# data = json.load(f)
 
 class User(UserMixin, db.Model):
     __tablename__ = 'user'
@@ -61,10 +63,31 @@ class Product(db.Model):
     link = db.Column(db.String(1000))
     price = db.Column(db.String(1000))
 
+    def to_algolia_dict(self):
+        return {
+            'objectID': self.id,
+            'name': self.name,
+            'family': self.family,
+            'order': self.order,
+            'genus': self.genus,
+            'calories': self.calories,
+            'fat': self.fat,
+            'sugar': self.sugar,
+            'carbohydrate': self.carbohydrate,
+            'protein': self.protein,
+            'link': self.link,
+            'price': self.price
+        }
+
 Index('idx_products_name', Product.name)
 Index('idx_products_family', Product.family)
 Index('idx_products_order', Product.order)
 Index('idx_products_genus', Product.genus)
+
+def sync_products_with_algolia():
+    produc = Product.query.all()
+    algolia_products = [product.to_algolia_dict() for product in produc]
+    index.save_objects(algolia_products)
 
 with app.app_context():
     db.create_all()
@@ -74,25 +97,25 @@ with app.app_context():
     #     db.session.commit()
     d = Product.query.all()
 
-@cache.cached(timeout=300)
 def get_products():
     return Product.query.all()
+
+def search_products(query):
+    results = index.search(query)
+    product_ids = [int(hit['objectID']) for hit in results['hits']]
+    return Product.query.filter(Product.id.in_(product_ids)).all()
 
 def generate_reset_token(user):
     serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
     token = serializer.dumps(user.email, salt='password-reset')
-
     user.reset_token = token
     db.session.commit()
-
     return token
 
 def send_reset_email(email, token):
     reset_url = url_for('reset_password', token=token, _external=True)
-
     msg = Message('Password Reset Request', recipients=[email])
     msg.body = f'Please click the following link to reset your password:\n{reset_url}'
-
     mail.send(msg)
 
 @login_manager.unauthorized_handler
@@ -148,24 +171,19 @@ def login():
             return render_template("login.html", l=1)
     return render_template("login.html", l=0)
 
-
 @app.route('/forgot', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
         email = request.form.get('email')
         user = User.query.filter_by(email=email).first()
-
         if user:
             # Generate a unique token and save it to the user's record
             token = generate_reset_token(user)
             # Send the password reset email containing the token
             send_reset_email(user.email, token)
-
         # Display a success message (without indicating if the email exists in the system)
         return render_template('forgot.html', success=True)
-
     return render_template('forgot.html')
-
 
 @app.route('/reset/<token>', methods=['GET', 'POST'])
 def reset_password(token):
@@ -175,30 +193,33 @@ def reset_password(token):
         user = User.query.filter_by(email=email).first()
     except:
         return render_template('reset.html', invalid=True)
-
     if request.method == 'POST':
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
-
         if password != confirm_password:
             return render_template('reset.html', mismatch=True)
-
         # Update the user's password
         user.password = generate_password_hash(password)[21:]
         user.reset_token = None  # Clear the reset token
         db.session.commit()
-
         # Redirect to login page or display a success message
         return redirect(url_for('login'))
-
     return render_template('reset.html', token=token)
-
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect("/")
+
+@app.route('/search')
+def search():
+    query = request.args.get('query', '')
+    if query:
+        produ = search_products(query=query)
+    else:
+        produ = get_products()
+    return render_template('products.html', data=produ)
 
 if __name__ == '__main__':
     app.run()
