@@ -175,14 +175,14 @@ section {
     padding: 0 1.5rem;
 }
 
-.header .search-form label {
+.header .search-form button {
     font-size: 2.2rem;
     padding-right: 1.5rem;
     color: var(--black);
     cursor: pointer;
 }
 
-.header .search-form label:hover {
+.header .search-form button:hover {
     color: var(--orange);
 }
 
